@@ -131,6 +131,24 @@
   .benefit b { display: block; color: var(--gold-bright); font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 7px; }
   .benefit span { color: var(--muted); }
 
+  /* THREE OPTIONS */
+  .opts { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 42px; }
+  .opt { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 26px 24px; display: flex; flex-direction: column; }
+  .opt.rec { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold-dim), 0 0 34px rgba(217,165,33,0.10); }
+  .opt .flag { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold-bright); height: 15px; margin-bottom: 10px; }
+  .opt .onum { font-family: var(--font-mono); font-size: 12px; color: var(--muted-2); letter-spacing: 0.1em; margin-bottom: 8px; }
+  .opt h3 { font-size: 21px; letter-spacing: -0.01em; margin-bottom: 8px; }
+  .opt .what { font-size: 14.5px; color: var(--muted); margin: 0 0 20px; flex-grow: 1; }
+  .opt .rows { display: grid; gap: 13px; border-top: 1px solid var(--line); padding-top: 18px; }
+  .opt .row .rk { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-2); margin-bottom: 3px; }
+  .opt .row .rv { font-size: 14.5px; color: var(--ink); line-height: 1.4; }
+  .opt .row .rv b { color: var(--gold-bright); font-weight: 600; }
+  @media (max-width: 760px) { .opts { grid-template-columns: 1fr; } }
+
+  .democta { display: inline-flex; align-items: center; gap: 8px; margin-top: 30px; font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.04em; color: var(--gold-bright); text-decoration: none; border: 1px solid var(--gold-dim); border-radius: 100px; padding: 12px 20px; transition: border-color .2s, background .2s; }
+  .democta:hover { border-color: var(--gold); background: var(--gold-dim); }
+  .democta:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
+
   /* NEXT STEPS */
   .steps { margin-top: 46px; position: relative; }
   .steps::before { content:""; position:absolute; left: 21px; top: 10px; bottom: 10px; width: 2px; background: linear-gradient(180deg, var(--gold), var(--gold-dim)); }
@@ -183,6 +201,7 @@
       <span class="tag brand">Let's build the future together.</span>
       <span class="tag">Partnership proposal</span>
       <span class="tag">Presented to Vedda Printing leadership</span>
+      <a class="tag" href="https://codedbycb-afk.github.io/ai-division-proposal/workflow.html" style="text-decoration:none;color:var(--gold-bright);border-color:var(--gold-dim);">▶ Watch the live demo</a>
     </div>
   </div>
 </header>
@@ -344,13 +363,58 @@
       <div class="benefit reveal"><b>Shared upside</b><span>Financial success grows together as the AI business expands.</span></div>
     </div>
     <p class="section-lead reveal" style="margin-top:34px;">Most regional printing companies are not yet offering AI consulting. Establishing this division today positions Vedda Printing <b style="color:var(--ink);font-weight:600;">ahead of the market, not chasing it.</b></p>
+    <a class="democta reveal" href="https://codedbycb-afk.github.io/ai-division-proposal/workflow.html">▶ Watch the order engine run &nbsp;→</a>
+  </div>
+</section>
+
+<!-- THREE WAYS -->
+<section class="section">
+  <div class="wrap">
+    <p class="eyebrow reveal">07 — Three ways to partner</p>
+    <h2 class="h2big reveal">Pick the depth that fits you.</h2>
+    <p class="section-lead reveal" style="margin-top:18px;">Same engine, three levels of commitment — anchored on what you invest and what comes back. My recommendation is the middle.</p>
+    <div class="opts">
+      <div class="opt reveal">
+        <div class="flag"></div>
+        <div class="onum">OPTION 1</div>
+        <h3>Internal Engine</h3>
+        <p class="what">The AI runs Vedda's own order flow and serves your existing print customers better. All the value stays inside the shop.</p>
+        <div class="rows">
+          <div class="row"><div class="rk">You invest</div><div class="rv">My salary + tool costs</div></div>
+          <div class="row"><div class="rk">I take</div><div class="rv">~$65k salary · no equity</div></div>
+          <div class="row"><div class="rk">You get</div><div class="rv">The work of <b>two extra hires</b>, no new payroll</div></div>
+        </div>
+      </div>
+      <div class="opt rec reveal">
+        <div class="flag">★ Recommended</div>
+        <div class="onum">OPTION 2</div>
+        <h3>The AI Division</h3>
+        <p class="what">Everything in Option 1 — plus we package the engine and sell it to other businesses. Vedda gains a whole new profit center.</p>
+        <div class="rows">
+          <div class="row"><div class="rk">You invest</div><div class="rv">My base + modest capital into the division</div></div>
+          <div class="row"><div class="rk">I take</div><div class="rv">Lower base + <b>real equity</b> as co-owner</div></div>
+          <div class="row"><div class="rk">You get</div><div class="rv">Internal gains + <b>new recurring revenue</b> (~$5–15k setup + $2–5k/mo per client)</div></div>
+        </div>
+      </div>
+      <div class="opt reveal">
+        <div class="flag"></div>
+        <div class="onum">OPTION 3</div>
+        <h3>Scaled Venture</h3>
+        <p class="what">A formal venture with real investment and a small team under me, rolling Vedda AI out across Northeast Ohio as its own brand.</p>
+        <div class="rows">
+          <div class="row"><div class="rk">You invest</div><div class="rv">Real capital + a small team</div></div>
+          <div class="row"><div class="rk">I take</div><div class="rv">Higher equity · operator</div></div>
+          <div class="row"><div class="rk">You get</div><div class="rv">A second company that can <b>out-earn print</b></div></div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
 <!-- NEXT STEPS -->
 <section class="section">
   <div class="wrap">
-    <p class="eyebrow reveal">07 — Next steps</p>
+    <p class="eyebrow reveal">08 — Next steps</p>
     <h2 class="h2big reveal">A clear path from handshake to launch.</h2>
     <div class="steps">
       <div class="stepr reveal"><div class="n">1</div><h4>Align on the vision</h4><p>Confirm the strategic vision and partnership goals together.</p></div>
