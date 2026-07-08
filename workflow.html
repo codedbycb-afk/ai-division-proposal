@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="How Vedda Printing's AI order engine works — and why it runs any business.">
+<title>Vedda AI — The Order Engine</title>
+<style>
+  :root {
+    --navy: #0a1730;
+    --panel: #0f2246;
+    --panel-2: #143163;
+    --line: #21365f;
+    --gold: #d9a521;
+    --gold-bright: #eec24a;
+    --gold-dim: rgba(217,165,33,0.16);
+    --human: #5fa8e0;
+    --human-bright: #8cc4f0;
+    --human-dim: rgba(95,168,224,0.16);
+    --ink: #eef2fa;
+    --muted: #9aa9c7;
+    --muted-2: #67779e;
+    --font-display: 900 1em/1 'Arial Black','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --font-body: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --font-mono: ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--navy); color: var(--ink);
+    font-family: var(--font-body); font-size: 17px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  h1,h2,h3 { text-wrap: balance; margin: 0; }
+  .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin: 0 0 16px; }
+  .h2big { font: var(--font-display); text-transform: uppercase; font-size: clamp(26px,4.4vw,42px); letter-spacing: -0.02em; line-height: 1.02; max-width: 22ch; }
+  .lead { color: var(--muted); font-size: 18px; max-width: 62ch; }
+
+  /* hero */
+  .hero { position: relative; padding: 74px 0 40px; overflow: hidden; }
+  .hero-glow { position: absolute; top: -40%; left: 50%; width: 820px; height: 820px; transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(217,165,33,0.18) 0%, rgba(95,168,224,0.06) 40%, transparent 66%); filter: blur(24px); z-index: 0; animation: pulse 8s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:.7;} 50%{opacity:1;} }
+  .hero .wrap { position: relative; z-index: 1; }
+  .brandbar { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.28em; color: var(--muted); margin-bottom: 34px; text-transform: uppercase; }
+  .brandbar b { color: var(--gold); }
+  .hero h1 { font: var(--font-display); text-transform: uppercase; font-size: clamp(34px,6.2vw,66px); letter-spacing: -0.02em; line-height: 0.96; margin: 0 0 22px; max-width: 15ch; }
+  .hero h1 .hl { color: var(--gold); }
+  .hero .lead b { color: var(--ink); font-weight: 600; }
+
+  /* legend */
+  .legend { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 30px; }
+  .legend .item { display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-mono); font-size: 12.5px; letter-spacing: 0.04em; color: var(--muted); }
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot.ai { background: var(--gold); box-shadow: 0 0 10px var(--gold-dim); }
+  .dot.human { background: var(--human); box-shadow: 0 0 10px var(--human-dim); }
+
+  /* demo */
+  .demo { padding: 48px 0 88px; }
+  .track-scroll { overflow-x: auto; padding: 8px 0 14px; margin-top: 8px; -webkit-overflow-scrolling: touch; }
+  .track { display: flex; align-items: stretch; gap: 0; min-width: 720px; }
+  .node { position: relative; flex: 1; background: none; border: none; padding: 0 6px; cursor: pointer; text-align: center; font-family: inherit; }
+  .node .ring { width: 46px; height: 46px; margin: 0 auto 10px; border-radius: 50%; border: 2px solid var(--line); background: var(--panel);
+    display: flex; align-items: center; justify-content: center; font: var(--font-display); font-size: 16px; color: var(--muted-2); font-variant-numeric: tabular-nums;
+    transition: all .35s ease; position: relative; z-index: 2; }
+  .node .nlabel { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.02em; color: var(--muted-2); line-height: 1.3; transition: color .35s ease; display: block; }
+  .node::after { content: ""; position: absolute; top: 22px; left: 50%; width: 100%; height: 2px; background: var(--line); z-index: 1; }
+  .node:last-child::after { display: none; }
+  .node.done .ring { border-color: var(--muted-2); color: var(--muted); }
+  .node.active .ring { transform: scale(1.14); }
+  .node.ai.active .ring { border-color: var(--gold); color: var(--gold-bright); box-shadow: 0 0 0 5px var(--gold-dim), 0 0 22px var(--gold-dim); }
+  .node.human.active .ring { border-color: var(--human); color: var(--human-bright); box-shadow: 0 0 0 5px var(--human-dim), 0 0 22px var(--human-dim); }
+  .node.active .nlabel { color: var(--ink); }
+  .node.ai.done::after { background: var(--gold-dim); }
+  .node.human.done::after { background: var(--human-dim); }
+  .node:focus-visible .ring { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+
+  /* stage panel */
+  .panel { margin-top: 26px; background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 30px 32px; min-height: 240px; }
+  .panel-top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .badge { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 6px 12px; border-radius: 100px; }
+  .badge.ai { color: var(--gold-bright); background: var(--gold-dim); }
+  .badge.human { color: var(--human-bright); background: var(--human-dim); }
+  .panel h3 { font-size: clamp(21px,3vw,28px); letter-spacing: -0.01em; }
+  .panel .detail { color: var(--muted); font-size: 17px; margin: 8px 0 0; max-width: 70ch; }
+  .msg { margin-top: 20px; border-radius: 12px; padding: 16px 18px; font-size: 15px; border: 1px solid var(--line); background: var(--panel-2); }
+  .msg .from { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-2); margin-bottom: 8px; }
+  .msg .body { color: var(--ink); line-height: 1.5; }
+  .msg.ai { border-color: var(--gold-dim); }
+  .msg.ai .from { color: var(--gold); }
+  .msg.human { border-color: var(--human-dim); }
+  .msg.human .from { color: var(--human); }
+  .routes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 18px; }
+  .route { border: 1px solid var(--line); border-radius: 12px; padding: 15px 17px; font-size: 14.5px; }
+  .route .rk { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 7px; }
+  .route.a .rk { color: var(--human); } .route.a { border-color: var(--human-dim); }
+  .route.b .rk { color: var(--gold); } .route.b { border-color: var(--gold-dim); }
+  .route span { color: var(--muted); }
+
+  .controls { display: flex; gap: 10px; margin-top: 22px; align-items: center; }
+  .btn { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.04em; color: var(--ink); background: var(--panel-2); border: 1px solid var(--line); border-radius: 100px; padding: 10px 18px; cursor: pointer; transition: border-color .2s; }
+  .btn:hover { border-color: var(--gold); }
+  .btn:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
+  .hint { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted-2); margin-left: 4px; }
+
+  /* section */
+  .section { padding: 84px 0; border-top: 1px solid var(--line); }
+
+  /* engine strip */
+  .engine { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 38px; }
+  .beat { flex: 1; min-width: 140px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px 16px; }
+  .beat .bn { font-family: var(--font-mono); font-size: 11px; color: var(--gold); letter-spacing: 0.08em; margin-bottom: 8px; }
+  .beat h4 { font-size: 16px; letter-spacing: -0.01em; margin-bottom: 4px; }
+  .beat p { font-size: 13px; color: var(--muted); margin: 0; }
+
+  /* industry cards */
+  .inds { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-top: 40px; }
+  .ind { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 26px 26px; }
+  .ind h3 { font-size: 19px; letter-spacing: -0.01em; margin-bottom: 6px; }
+  .ind .tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: block; }
+  .ind ol { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 9px; counter-reset: s; }
+  .ind li { position: relative; padding-left: 30px; font-size: 14.5px; color: var(--muted); counter-increment: s; }
+  .ind li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line); font-family: var(--font-mono); font-size: 11px; color: var(--muted-2); display: flex; align-items: center; justify-content: center; }
+  .ind li b { color: var(--ink); font-weight: 600; }
+
+  /* close */
+  .close-card { margin-top: 40px; background: linear-gradient(180deg, rgba(217,165,33,0.09), rgba(217,165,33,0.02)); border: 1px solid var(--gold-dim); border-left: 3px solid var(--gold); border-radius: 16px; padding: 34px 34px; }
+  .close-card p { margin: 0; font-size: 20px; line-height: 1.45; letter-spacing: -0.005em; }
+  .close-card p b { color: var(--gold-bright); }
+
+  footer { border-top: 1px solid var(--line); padding: 48px 0 66px; }
+  footer .bl { font: var(--font-display); text-transform: uppercase; font-size: 22px; letter-spacing: -0.01em; }
+  footer .bl .hl { color: var(--gold); }
+  footer .meta { color: var(--muted-2); font-family: var(--font-mono); font-size: 12px; margin-top: 14px; letter-spacing: 0.04em; }
+
+  @media (max-width: 720px) {
+    .inds { grid-template-columns: 1fr; }
+    .routes { grid-template-columns: 1fr; }
+    .panel { padding: 24px 22px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-glow { animation: none; }
+    .node .ring, .node.active .ring { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="brandbar"><b>VEDDA</b> AI · THE ORDER ENGINE</div>
+    <h1>Watch a single order <span class="hl">run itself.</span></h1>
+    <p class="lead">Here's a real print order moving through Vedda from the first email to a tracked, approved job — with AI handling the busywork and <b>your people making every call that matters.</b> Then watch the same engine run a law firm, a contractor, any business. Press play.</p>
+    <div class="legend">
+      <span class="item"><span class="dot ai"></span> AI handles it — automatically</span>
+      <span class="item"><span class="dot human"></span> Your Vedda team — the human calls</span>
+    </div>
+  </div>
+</header>
+
+<section class="demo">
+  <div class="wrap">
+    <div class="track-scroll">
+      <div class="track" id="track"></div>
+    </div>
+
+    <div class="panel" id="panel" aria-live="polite">
+      <!-- filled by JS -->
+    </div>
+
+    <div class="controls">
+      <button class="btn" id="playBtn">⏸ Pause</button>
+      <button class="btn" id="restartBtn">↺ Restart</button>
+      <span class="hint">or click any step</span>
+    </div>
+  </div>
+</section>
+
+<!-- THE ENGINE -->
+<section class="section">
+  <div class="wrap">
+    <p class="eyebrow">The pattern underneath</p>
+    <h2 class="h2big">Strip away "print," and it's the same six beats.</h2>
+    <p class="lead" style="margin-top:16px;">Every service business runs this exact loop. That's the whole point — build the engine once, and it fits anyone.</p>
+    <div class="engine">
+      <div class="beat"><div class="bn">01</div><h4>Request</h4><p>A customer asks for something.</p></div>
+      <div class="beat"><div class="bn">02</div><h4>Respond</h4><p>AI replies in your voice.</p></div>
+      <div class="beat"><div class="bn">03</div><h4>Scope &amp; price</h4><p>Human or AI puts a number on it.</p></div>
+      <div class="beat"><div class="bn">04</div><h4>Fulfill</h4><p>The work gets entered and done.</p></div>
+      <div class="beat"><div class="bn">05</div><h4>Follow up</h4><p>Proofs, approvals, updates — handled.</p></div>
+      <div class="beat"><div class="bn">06</div><h4>Track</h4><p>Every job watched to the finish.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- INDUSTRIES -->
+<section class="section">
+  <div class="wrap">
+    <p class="eyebrow">How this is valuable for more than print</p>
+    <h2 class="h2big">One engine. Every business Vedda could sell to.</h2>
+    <p class="lead" style="margin-top:16px;">The same system you'd run on Vedda's floor becomes a product the AI division sells across Northeast Ohio.</p>
+    <div class="inds">
+      <div class="ind">
+        <h3>Commercial Print</h3>
+        <span class="tag">Vedda itself</span>
+        <ol>
+          <li><b>Inquiry</b> lands with the sales rep</li>
+          <li>AI <b>drafts the quote reply</b> in the rep's voice</li>
+          <li>Estimator or <b>AI estimating agent</b> prices it</li>
+          <li>Clean specs to <b>order entry</b>; errors flagged</li>
+          <li>Proofs drafted to the customer; <b>PM approves</b></li>
+          <li>Every job <b>tracked</b> to delivery</li>
+        </ol>
+      </div>
+      <div class="ind">
+        <h3>Law Firm</h3>
+        <span class="tag">Intake &amp; matters</span>
+        <ol>
+          <li>New client <b>emails the firm</b></li>
+          <li>AI <b>responds in the attorney's voice</b></li>
+          <li>Paralegal or AI <b>scopes the engagement</b> &amp; fee</li>
+          <li><b>Matter opened</b>, intake docs requested</li>
+          <li>Deadlines &amp; filings <b>followed up</b> automatically</li>
+          <li>Every case <b>tracked</b> with the attorney approving</li>
+        </ol>
+      </div>
+      <div class="ind">
+        <h3>Home Services &amp; Contractors</h3>
+        <span class="tag">Estimates &amp; jobs</span>
+        <ol>
+          <li>Homeowner <b>requests a job</b></li>
+          <li>AI <b>replies and qualifies</b> instantly, 24/7</li>
+          <li>AI takeoff or estimator <b>builds the quote</b></li>
+          <li><b>Scheduled</b>; change orders handled</li>
+          <li>Updates &amp; proofs <b>sent to the client</b></li>
+          <li>Crew &amp; job status <b>tracked</b> for the owner</li>
+        </ol>
+      </div>
+      <div class="ind">
+        <h3>Any Office — Your AI Assistant</h3>
+        <span class="tag">Ops &amp; admin</span>
+        <ol>
+          <li>Any <b>request comes in</b> by email or call</li>
+          <li>AI <b>drafts the response</b> in the right voice</li>
+          <li>It <b>routes to the right person</b> or handles it</li>
+          <li>Tasks <b>executed or scheduled</b></li>
+          <li>Nothing dropped — <b>everything followed up</b></li>
+          <li>A running <b>log of it all</b>, always current</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSE -->
+<section class="section">
+  <div class="wrap">
+    <p class="eyebrow">Why this is the whole opportunity</p>
+    <div class="close-card">
+      <p>Build this once for Vedda's print floor, and it stops being an internal tool — it becomes <b>a product the division sells to every business in the region.</b> That's the difference between saving Vedda some hours and building Vedda a second company.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="bl">VEDDA <span class="hl">AI</span></div>
+    <div class="meta">The order engine · demonstration · 2026</div>
+  </div>
+</footer>
+
+<script>
+  var stages = [
+    { actor:'human', label:'Order comes in', title:'The order comes in',
+      detail:"A customer emails their sales rep — a repeat client or a fresh referral. Doesn't matter how it arrives; the engine catches it.",
+      msg:{cls:'human', from:'Customer → Sales rep', body:"“Hey Mark — need 500 tri-fold brochures, full color, 100# gloss, delivered by the 15th. Same as last spring. Can you get me a price?”"} },
+    { actor:'ai', label:'AI drafts reply', title:'AI drafts the reply — in the rep’s voice',
+      detail:"The agent reads the request, pulls context from past threads with this customer, and writes a response that sounds like the rep — not a robot. The rep just reviews and sends.",
+      msg:{cls:'ai', from:'AI draft for Mark', body:"“Good hearing from you again! 500 tri-folds, full color on 100# gloss, in your hands by the 15th — I’m on it. Sending your number over within the hour.”"} },
+    { actor:'ai', label:'Estimate & quote', title:'Estimate & quote',
+      detail:"Two ways to price it — your call. Hand it to Vedda’s estimator, or let the AI estimating agent pull specs, stock, and run size and return a number in seconds.",
+      routes:true,
+      msg:{cls:'ai', from:'Quote produced', body:"500 tri-fold brochures · full color 4/4 · 100# gloss text · folded — <b>$2,340</b>, 5 business days."} },
+    { actor:'human', label:'Order entry', title:'Order entry — with a safety net',
+      detail:"The AI hands your order-entry team clean, correctly-formatted specs — nothing retyped. If anything doesn’t line up, it flags the sales rep before the job moves an inch.",
+      msg:{cls:'human', from:'AI → Order entry', body:"Specs verified and formatted. ⚠ One catch: no bleed on the back panel — flagged to Mark to confirm before release."} },
+    { actor:'ai', label:'Proofs', title:'Proofs to the customer',
+      detail:"When pre-press drops proofs in the rep’s inbox, the AI drafts the proof email to the customer — the rep just hits send. Or, if you want, it sends on its own.",
+      msg:{cls:'ai', from:'AI draft → Customer', body:"“Proofs attached for your 500 tri-folds — give these a look and reply ‘approved’ and we’ll get you on press today.”"} },
+    { actor:'human', label:'Approval', title:'Approval & release',
+      detail:"Customer approves. The AI releases the job automatically, or pings the PM to approve — and tells the PM exactly when to send proofs. The human stays in control of the go/no-go.",
+      msg:{cls:'human', from:'Status update', body:"✅ Customer approved → PM notified: cleared to release to press. Delivery on track for the 15th."} },
+    { actor:'ai', label:'Job tracking', title:'Every job, tracked to the finish',
+      detail:"From inquiry to delivery, every job and its status is tracked automatically. Nobody chases, nothing slips, and the rep always knows exactly where things stand.",
+      msg:{cls:'ai', from:'Live job board', body:"#1042 Brochures — On press · #1039 Banners — Proof sent · #1044 Booklets — Quoting · #1031 Cards — Delivered ✓"} }
+  ];
+
+  var track = document.getElementById('track');
+  var panel = document.getElementById('panel');
+  var playBtn = document.getElementById('playBtn');
+  var restartBtn = document.getElementById('restartBtn');
+  var idx = 0, playing = true, timer = null;
+  var DUR = 4200;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // build nodes
+  stages.forEach(function(s, i){
+    var b = document.createElement('button');
+    b.className = 'node ' + s.actor;
+    b.setAttribute('aria-label', (i+1) + '. ' + s.title);
+    b.innerHTML = '<span class="ring">' + (i+1) + '</span><span class="nlabel">' + s.label + '</span>';
+    b.addEventListener('click', function(){ go(i); });
+    track.appendChild(b);
+  });
+  var nodes = track.querySelectorAll('.node');
+
+  function render(i){
+    var s = stages[i];
+    nodes.forEach(function(n, j){
+      n.classList.toggle('active', j === i);
+      n.classList.toggle('done', j < i);
+    });
+    var html = '';
+    html += '<div class="panel-top">';
+    html += '<span class="badge ' + s.actor + '">' + (s.actor === 'ai' ? 'AI — automated' : 'Vedda team — human') + '</span>';
+    html += '</div>';
+    html += '<h3>' + s.title + '</h3>';
+    html += '<p class="detail">' + s.detail + '</p>';
+    if (s.routes) {
+      html += '<div class="routes">';
+      html += '<div class="route a"><div class="rk">Route A · today</div>Your <span>human estimator</span> reviews and prices it — the AI just teed it up.</div>';
+      html += '<div class="route b"><div class="rk">Route B · we build this</div>An <span>AI estimating agent</span> does the estimator’s job and returns the quote in seconds.</div>';
+      html += '</div>';
+    }
+    if (s.msg) {
+      html += '<div class="msg ' + s.msg.cls + '"><div class="from">' + s.msg.from + '</div><div class="body">' + s.msg.body + '</div></div>';
+    }
+    panel.innerHTML = html;
+  }
+
+  function go(i){ idx = i; render(idx); resetTimer(); }
+  function next(){ idx = (idx + 1) % stages.length; render(idx); }
+  function resetTimer(){
+    clearTimeout(timer);
+    if (playing) timer = setTimeout(function(){ next(); resetTimer(); }, DUR);
+  }
+  function setPlaying(p){
+    playing = p;
+    playBtn.textContent = p ? '⏸ Pause' : '▶ Play';
+    resetTimer();
+  }
+
+  playBtn.addEventListener('click', function(){ setPlaying(!playing); });
+  restartBtn.addEventListener('click', function(){ go(0); });
+
+  render(0);
+  if (reduce) { setPlaying(false); } else { resetTimer(); }
+</script>
+</body>
+</html>
