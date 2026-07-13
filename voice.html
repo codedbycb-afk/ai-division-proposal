@@ -200,7 +200,7 @@ function cleanPhone(t){
   return t.trim();
 }
 function whenIn(t){
-  const m=t.match(/\b(today|tomorrow|tonight|asap|this week|next week|this weekend|end of the month|monday|tuesday|wednesday|thursday|friday|saturday|sunday|next monday|next tuesday|next wednesday|next thursday|next friday|the \d+(st|nd|rd|th)|\w+ \d+(st|nd|rd|th)?)\b/i);
+  const m=t.match(/\b(today|tomorrow|tonight|asap|this week|next week|this weekend|end of the month|(next\s+|this\s+)?(monday|tuesday|wednesday|thursday|friday|saturday|sunday)|the\s+\d+(st|nd|rd|th)|(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d+(st|nd|rd|th)?|\d+(st|nd|rd|th))\b/i);
   return m?m[0]:null;
 }
 
