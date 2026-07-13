@@ -36,7 +36,7 @@
   .avatar{width:110px;height:110px;margin:6px auto 18px;border-radius:50%;position:relative;
     background:radial-gradient(circle at 35% 30%, #1f1f1f, #0a0a0a);border:2px solid var(--line);
     display:flex;align-items:center;justify-content:center;transition:border-color .3s}
-  .avatar .core{width:26px;height:26px;border-radius:50%;background:var(--orange);box-shadow:0 0 24px rgba(249,115,22,.7);transition:transform .12s ease}
+  .avatar .core{width:26px;height:26px;border-radius:50%;background:var(--orange);box-shadow:0 0 24px rgba(249,115,22,.7)}
   .call.listening .avatar{border-color:#fff}
   .call.speaking .avatar{border-color:var(--orange)}
   .ring1,.ring2{position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--orange);opacity:0;pointer-events:none}
@@ -69,18 +69,17 @@
   .bub.cust .who{color:#fff}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-  /* estimate card */
-  .quote{display:none;margin-top:18px;border:1px solid var(--orange-dim);border-left:3px solid var(--orange);border-radius:0 12px 12px 0;background:var(--panel-2);padding:20px 22px;text-align:left;animation:fade .4s ease}
-  .quote.show{display:block}
-  .qtitle{font:var(--font-display);text-transform:uppercase;font-size:17px;margin:0 0 4px}
-  .qmeta{color:var(--muted);font-size:13px;margin-bottom:14px}
-  .li{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px}
-  .li .desc{color:var(--ink)}
-  .li .desc small{display:block;color:var(--muted-2);font-size:12px}
-  .li .amt{font-family:var(--font-mono);white-space:nowrap}
-  .li.total{border-bottom:0;padding-top:13px;font-weight:800}
-  .li.total .amt{color:var(--orange-bright);font-size:18px}
-  .await{margin-top:12px;font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;color:var(--orange-bright)}
+  /* intake ticket */
+  .ticket{display:none;margin-top:18px;border:1px solid var(--orange-dim);border-left:3px solid var(--orange);border-radius:0 12px 12px 0;background:var(--panel-2);padding:20px 22px;text-align:left;animation:fade .4s ease}
+  .ticket.show{display:block}
+  .ttitle{font:var(--font-display);text-transform:uppercase;font-size:17px;margin:0 0 4px}
+  .tmeta{color:var(--muted);font-size:13px;margin-bottom:14px}
+  .row{display:flex;gap:14px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+  .row:last-of-type{border-bottom:0}
+  .row .k{font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted-2);min-width:96px;padding-top:2px}
+  .row .v{color:var(--ink)}
+  .row .v.pending{color:var(--muted-2);font-style:italic}
+  .sent{margin-top:12px;font-family:var(--font-mono);font-size:11px;letter-spacing:.08em;color:var(--orange-bright)}
 
   .fallback{display:none;margin-top:18px}
   .fallback.show{display:flex;gap:10px}
@@ -96,95 +95,43 @@
     <div class="badge"><span class="dot"></span> VEDDA AI · VOICE AGENT</div>
     <a class="back" href="./">← back to the proposal</a>
   </div>
-  <h1>Call the shop. <span class="hl">The AI answers.</span></h1>
-  <p class="sub"><b>Start the call and just talk</b> — ask for a price the way a customer would. The agent quotes it out loud and drafts the estimate. This is what answers when the shop is closed, busy, or on the other line.</p>
+  <h1>Every call answered. <span class="hl">Nothing lost.</span></h1>
+  <p class="sub">When the shop is closed, busy, or on the other line, <b>the AI picks up, takes the whole job down, and hands it to your team</b> — name, number, what they need, when they need it. No pricing, no promises. Just no more missed customers.</p>
 
   <div class="call" id="call">
-    <div class="avatar"><div class="ring1"></div><div class="ring2"></div><div class="core" id="core"></div></div>
+    <div class="avatar"><div class="ring1"></div><div class="ring2"></div><div class="core"></div></div>
     <div class="status" id="status">Ready</div>
     <div class="btns">
       <button class="btn start" id="startBtn">📞 Start the call</button>
       <button class="btn talk" id="talkBtn" style="display:none">🎙 Speak</button>
       <button class="btn end" id="endBtn" style="display:none">End call</button>
     </div>
-    <p class="tip" id="tip">Try: <b>"How much for 500 double-sided business cards on thick matte stock — I need them Friday?"</b></p>
+    <p class="tip" id="tip">Try: <b>"Hey, I need 500 business cards for a trade show next Friday."</b></p>
     <div class="fallback" id="fallback">
-      <input id="typed" placeholder="Mic unavailable — type the request instead…">
+      <input id="typed" placeholder="Mic unavailable — type instead…">
       <button class="btn talk" id="sendTyped">Send</button>
     </div>
     <div class="log" id="log"></div>
-    <div class="quote" id="quote"></div>
+    <div class="ticket" id="ticket"></div>
   </div>
 
-  <p class="disclaim">Demo build — runs entirely in this browser. The production version answers a <b>real phone number</b> on Vedda's line, reads Vedda's real rate card, and books the job into the shop's system. <b>Orange = AI. A human confirms every job before it runs.</b></p>
+  <p class="disclaim">Demo build — runs entirely in this browser. The production version answers a <b>real phone number</b> on Vedda's line and drops the message straight into the shop's system. <b>The AI never quotes a price — your team calls back with the number.</b></p>
 </div>
 
 <script>
-// ---------- estimator (same engine as the quote demo) ----------
-const RATE = {
-  business_cards:{ name:"Business Cards", unit:"card", setup:25, per:0.14, min:35, days:3, stocks:{matte:1.15,glossy:1.1,thick:1.35,standard:1}, size:"3.5 × 2 in" },
-  flyer:{ name:"Flyers", unit:"flyer", setup:20, per:0.28, min:40, days:3, stocks:{glossy:1.15,matte:1.1,standard:1}, size:"8.5 × 11 in" },
-  postcard:{ name:"Postcards", unit:"card", setup:30, per:0.22, min:45, days:4, stocks:{glossy:1.15,matte:1.1,standard:1}, size:"varies" },
-  banner:{ name:"Vinyl Banner", unit:"sq ft", setup:15, per:5.5, min:65, days:2, stocks:{standard:1}, size:"custom" },
-  yard_sign:{ name:"Yard Signs", unit:"sign", setup:20, per:8.5, min:60, days:3, stocks:{standard:1}, size:"18 × 24 in" },
-  apparel:{ name:"Custom Apparel", unit:"shirt", setup:40, per:9.5, min:120, days:6, stocks:{standard:1}, size:"per garment" },
-  brochure:{ name:"Brochures", unit:"brochure", setup:35, per:0.65, min:75, days:4, stocks:{glossy:1.15,matte:1.1,standard:1}, size:"tri-fold" },
-  sticker:{ name:"Stickers / Labels", unit:"sticker", setup:20, per:0.35, min:40, days:4, stocks:{glossy:1.1,matte:1.05,standard:1}, size:"custom die-cut" },
-  generic:{ name:"Custom Print Job", unit:"unit", setup:35, per:0.5, min:75, days:4, stocks:{standard:1}, size:"to be confirmed" }
-};
-function classify(t){ t=t.toLowerCase();
-  if(/business card|biz card/.test(t)) return 'business_cards';
-  if(/postcard/.test(t)) return 'postcard';
-  if(/flyer|flier|leaflet/.test(t)) return 'flyer';
-  if(/banner/.test(t)) return 'banner';
-  if(/yard sign|lawn sign|sign\b/.test(t)) return 'yard_sign';
-  if(/t-?shirt|shirt|hoodie|apparel|garment|tee\b/.test(t)) return 'apparel';
-  if(/brochure|tri-?fold|pamphlet/.test(t)) return 'brochure';
-  if(/sticker|label|decal/.test(t)) return 'sticker';
-  return null;
-}
-function qtyOf(t,def){ const m=t.replace(/,/g,'').match(/(\d{2,6})/); if(m) return parseInt(m[1],10); const small=t.match(/\b(\d{1,3})\b/); return small?parseInt(small[1],10):def; }
-function stockOf(t){ t=t.toLowerCase(); if(/thick|heavy|premium/.test(t)) return 'thick'; if(/gloss/.test(t)) return 'glossy'; if(/matte/.test(t)) return 'matte'; return 'standard'; }
-function sidesOf(t){ return /double|both side|two side|2 side|front and back|front & back/i.test(t)?2:1; }
-function rushOf(t){ return /rush|asap|urgent|tomorrow|today|by friday|this weekend|next day|overnight/i.test(t.toLowerCase()); }
-function colorsOf(t){ const m=t.toLowerCase().match(/(\d)\s*colou?r/); return m?parseInt(m[1],10):(/full color|full colour|4 ?color|cmyk/.test(t.toLowerCase())?4:1); }
-function bannerSqFt(t){ const m=t.match(/(\d+)\s*(ft|foot|feet|')\s*(x|by|\*)\s*(\d+)/i); if(m) return parseInt(m[1])*parseInt(m[4]); return 18; }
-function money(n){ return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-function estimate(text, key){
-  const r=RATE[key];
-  const stock=stockOf(text), sides=sidesOf(text), rush=rushOf(text), colors=colorsOf(text);
-  let qty=qtyOf(text, key==='apparel'?24:key==='banner'?1:500);
-  const lines=[];
-  if(key==='banner'){ const sqft=bannerSqFt(text); qty=1;
-    lines.push({d:r.name+' · '+sqft+' sq ft', s:money(r.per)+'/sq ft + '+money(r.setup)+' setup', a:Math.max(r.min, r.setup+sqft*r.per)});
-  } else if(key==='apparel'){
-    const perShirt=r.per*(colors>1?1+(colors-1)*0.25:1)*(sides===2?1.4:1);
-    lines.push({d:qty+' × '+r.name, s:colors+'-color'+(sides===2?', front & back':'')+' · '+money(perShirt)+'/shirt', a:qty*perShirt});
-    lines.push({d:'Screen setup', s:colors+' screen'+(colors>1?'s':''), a:r.setup});
-  } else {
-    const mult=(r.stocks[stock]||1)*(sides===2?1.6:1)*(colors>=4?1:0.9);
-    const per=r.per*mult;
-    lines.push({d:qty+' × '+r.name, s:r.size+' · '+stock+' stock · '+(sides===1?'single':'double')+'-sided', a:qty*per});
-    lines.push({d:'File prep & setup', s:'artwork check, proof', a:r.setup});
-  }
-  const sub=lines.reduce((s,l)=>s+l.a,0);
-  const rushFee=rush?Math.max(25,sub*0.2):0;
-  const tax=(sub+rushFee)*0.075;
-  const total=sub+rushFee+tax;
-  const days=rush?Math.max(1,Math.round(r.days/2)):r.days;
-  return {r,lines,sub,rushFee,tax,total,days,rush,qty};
-}
-
-// ---------- voice ----------
-const call=document.getElementById('call'), status=document.getElementById('status'), core=document.getElementById('core');
+// ---------- state ----------
+const call=document.getElementById('call'), status=document.getElementById('status');
 const startBtn=document.getElementById('startBtn'), talkBtn=document.getElementById('talkBtn'), endBtn=document.getElementById('endBtn');
-const log=document.getElementById('log'), quoteEl=document.getElementById('quote'), tip=document.getElementById('tip');
+const log=document.getElementById('log'), ticket=document.getElementById('ticket'), tip=document.getElementById('tip');
 const fallback=document.getElementById('fallback'), typed=document.getElementById('typed'), sendTyped=document.getElementById('sendTyped');
-let onCall=false, awaitingConfirm=false, lastQuote=null, voice=null, rec=null, listening=false;
+let onCall=false, step='need', intake={need:null, when:null, name:null, phone:null}, voice=null, rec=null, listening=false;
 
+// ---------- voice output ----------
 function pickVoice(){
   const vs=speechSynthesis.getVoices();
-  return vs.find(v=>/Samantha/i.test(v.name)) || vs.find(v=>/Google US English/i.test(v.name)) || vs.find(v=>v.lang==='en-US') || vs[0] || null;
+  const pref=['Ava (Premium)','Ava','Zoe (Premium)','Samantha','Allison','Google US English'];
+  for(const p of pref){ const v=vs.find(v=>v.name===p||v.name.startsWith(p)); if(v) return v; }
+  return vs.find(v=>v.lang==='en-US')||vs[0]||null;
 }
 if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged=()=>{voice=pickVoice();}; voice=pickVoice(); }
 
@@ -202,13 +149,16 @@ function speak(text, then){
   bubble('ai', text);
   if(!('speechSynthesis' in window)){ if(then) then(); return; }
   speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(text.replace(/\$([\d,.]+)/g,'$1 dollars'));
-  if(voice) u.voice=voice; u.rate=1.02; u.pitch=1;
+  const u=new SpeechSynthesisUtterance(text);
+  if(voice) u.voice=voice; u.rate=1.0; u.pitch=1.02;
   setState('speaking');
-  u.onend=()=>{ setState(''); if(then) then(); };
+  let done=false; const fin=()=>{ if(done) return; done=true; setState(''); if(then) then(); };
+  u.onend=fin; u.onerror=fin;
+  setTimeout(fin, Math.max(2500, text.length*80)); // safety: never stall the flow
   speechSynthesis.speak(u);
 }
 
+// ---------- voice input ----------
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 function listen(){
   if(!onCall) return;
@@ -217,59 +167,102 @@ function listen(){
     rec=new SR(); rec.lang='en-US'; rec.interimResults=false; rec.maxAlternatives=1;
     listening=true; setState('listening');
     rec.onresult=e=>{ listening=false; const t=e.results[0][0].transcript; bubble('cust', t); setState(''); respond(t); };
-    rec.onerror=()=>{ listening=false; setState(''); fallback.classList.add('show'); };
-    rec.onend=()=>{ if(listening){ listening=false; setState(''); } };
+    rec.onerror=ev=>{ listening=false; setState('');
+      if(ev.error==='no-speech'){ listen(); return; } // just keep listening
+      fallback.classList.add('show'); };
+    rec.onend=()=>{ if(listening){ listening=false; if(onCall){ listen(); } } };
     rec.start();
   }catch(err){ fallback.classList.add('show'); }
 }
 
-function showQuote(q){
-  let html='<div class="qtitle">Estimate · '+q.r.name+'</div><div class="qmeta">Drafted live by Vedda AI · '+q.days+' business day'+(q.days>1?'s':'')+(q.rush?' (rush)':'')+'</div>';
-  const rows=[...q.lines];
-  if(q.rushFee>0) rows.push({d:'Rush priority', s:'expedited production', a:q.rushFee});
-  rows.push({d:'Sales tax', s:'est. 7.5%', a:q.tax});
-  for(const row of rows) html+='<div class="li"><div class="desc">'+row.d+(row.s?'<small>'+row.s+'</small>':'')+'</div><div class="amt">'+money(row.a)+'</div></div>';
-  html+='<div class="li total"><div class="desc">Estimated total</div><div class="amt">'+money(q.total)+'</div></div>';
-  html+='<div class="await">● Awaiting human confirmation before anything runs</div>';
-  quoteEl.innerHTML=html; quoteEl.classList.add('show');
+// ---------- intake ticket ----------
+function renderTicket(final){
+  const f=(v)=> v?('<span class="v">'+v+'</span>'):'<span class="v pending">taking it down…</span>';
+  ticket.innerHTML='<div class="ttitle">Message for the shop</div>'+
+    '<div class="tmeta">Taken by Vedda AI · after-hours call</div>'+
+    '<div class="row"><div class="k">Request</div>'+f(intake.need)+'</div>'+
+    '<div class="row"><div class="k">Needed by</div>'+f(intake.when)+'</div>'+
+    '<div class="row"><div class="k">Name</div>'+f(intake.name)+'</div>'+
+    '<div class="row"><div class="k">Callback #</div>'+f(intake.phone)+'</div>'+
+    (final?'<div class="sent">● Sent to the shop — Mark calls back with the price</div>':'');
+  ticket.classList.add('show');
 }
 
+// ---------- parsing helpers ----------
+function cleanName(t){
+  return t.replace(/^(my name is|my name's|it's|its|this is|i am|i'm|im|name is|the name is|yeah|yes|uh|um)[,\s]+/i,'')
+          .replace(/[.?!]+$/,'').trim().replace(/\b\w/g,c=>c.toUpperCase());
+}
+function cleanPhone(t){
+  const d=t.replace(/\D/g,'');
+  if(d.length>=10) return d.slice(0,10).replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3');
+  if(d.length>=7) return d.replace(/(\d{3})(\d{4})/,'$1-$2');
+  return t.trim();
+}
+function whenIn(t){
+  const m=t.match(/\b(today|tomorrow|tonight|asap|this week|next week|this weekend|end of the month|monday|tuesday|wednesday|thursday|friday|saturday|sunday|next monday|next tuesday|next wednesday|next thursday|next friday|the \d+(st|nd|rd|th)|\w+ \d+(st|nd|rd|th)?)\b/i);
+  return m?m[0]:null;
+}
+
+// ---------- conversation ----------
 function respond(t){
   const low=t.toLowerCase();
-  if(awaitingConfirm && /\b(yes|yeah|yep|sure|sounds good|do it|please|ok|okay)\b/.test(low)){
-    awaitingConfirm=false;
-    speak("Done — I've sent the estimate over and flagged it for Mark. He'll confirm everything before it goes to press. Anything else I can price for you?", listen);
+
+  // universal intents
+  if(/\b(hours|open|close|closing|when are you)\b/.test(low)){
+    speak("We're open seven thirty to five, Monday through Friday. But I've got you right now — what do you need?", listen); return;
+  }
+  if(/\b(human|real person|talk to someone|manager)\b/.test(low)){
+    speak("Of course. I'll flag the team right now and someone will call you back first thing. Let me just grab your name and number so you don't have to repeat anything.", listen);
+    step = intake.name?'phone':'name'; renderTicket(false); return;
+  }
+  if(/\b(bye|goodbye|that's all|that is all|nothing else|no that|i'm good|im good|nope)\b/.test(low) && step==='done'){
+    speak("You got it. The shop has your message and you'll hear back shortly. Thanks for calling Vedda Printing!"); return;
+  }
+
+  if(step==='need'){
+    intake.need=t.replace(/^(hey|hi|hello|yeah|yes|uh|um)[,\s]+/i,'').trim();
+    const w=whenIn(t); if(w) intake.when=w;
+    renderTicket(false);
+    if(intake.when){ step='name'; speak("Got it — I've written that down. Can I get your name?", listen); }
+    else { step='when'; speak("Got it — I've written all that down. When do you need it by?", listen); }
     return;
   }
-  if(/\b(hours|open|close|closing|when are you)\b/.test(low)){
-    speak("We're open seven thirty to five, Monday through Friday. But I can take your order any time — day or night. What do you need printed?", listen); return;
+  if(step==='when'){
+    intake.when=whenIn(t)||t.replace(/[.?!]+$/,'').trim();
+    renderTicket(false); step='name';
+    speak("Perfect. And can I get your name?", listen); return;
   }
-  if(/\b(human|person|someone|real person|talk to|manager|mark)\b/.test(low)){
-    speak("Of course — I'll flag Mark right now and he'll call you back within the hour. I've saved everything from this call so you won't have to repeat a thing.", listen); return;
+  if(step==='name'){
+    intake.name=cleanName(t);
+    renderTicket(false); step='phone';
+    speak("Thanks, "+intake.name.split(' ')[0]+". What's the best number to reach you?", listen); return;
   }
-  if(/\b(thank|that's all|that is all|bye|goodbye|no that|nothing else|i'm good|im good)\b/.test(low)){
-    speak("You got it. Your quote's saved and Mark has the details. Thanks for calling Vedda Printing!"); awaitingConfirm=false; return;
+  if(step==='phone'){
+    intake.phone=cleanPhone(t);
+    step='done'; renderTicket(true);
+    speak("Perfect — you're all set, "+ (intake.name?intake.name.split(' ')[0]:'') +". I've sent everything to the shop, and Mark will call you back at that number with your price. Anything else I can note down?", listen);
+    return;
   }
-  const key=classify(t);
-  if(key){
-    const q=estimate(t, key); lastQuote=q; showQuote(q);
-    const qtyPhrase = key==='banner' ? 'your banner' : q.qty.toLocaleString()+' '+q.r.name.toLowerCase();
-    let line="Easy. For "+qtyPhrase+(q.rush?" with rush turnaround":"")+", you're looking at about "+money(q.total)+", ready in "+q.days+" business day"+(q.days>1?"s":"")+". Want me to email you the full estimate?";
-    awaitingConfirm=true;
-    speak(line, listen); return;
+  if(step==='done'){
+    if(/\b(yes|yeah|also|one more|actually)\b/.test(low)){
+      intake.need += ' — PLUS: '+t; renderTicket(true);
+      speak("Added to the message. Anything else?", listen); return;
+    }
+    speak("You're all set. Thanks for calling Vedda Printing — talk soon!"); return;
   }
-  speak("I can price that for you — just tell me the product, how many you need, and when you need it. For example: five hundred flyers by next Friday.", listen);
 }
 
+// ---------- controls ----------
 startBtn.addEventListener('click',()=>{
-  onCall=true;
+  onCall=true; step='need'; intake={need:null,when:null,name:null,phone:null};
   startBtn.style.display='none'; talkBtn.style.display=''; endBtn.style.display=''; tip.style.display='none';
-  quoteEl.classList.remove('show'); log.innerHTML='';
-  speak("Thanks for calling Vedda Printing! This is the Vedda AI assistant. What can I get quoted for you today?", listen);
+  ticket.classList.remove('show'); log.innerHTML='';
+  speak("Thanks for calling Vedda Printing — you've reached the after-hours assistant. Tell me what you need, and I'll get it straight to the team.", listen);
 });
 talkBtn.addEventListener('click',()=>{ if(!listening) listen(); });
 endBtn.addEventListener('click',()=>{
-  onCall=false; awaitingConfirm=false;
+  onCall=false; listening=false;
   if(rec){ try{rec.abort();}catch(e){} }
   speechSynthesis.cancel(); setState('');
   startBtn.style.display=''; talkBtn.style.display='none'; endBtn.style.display='none';
