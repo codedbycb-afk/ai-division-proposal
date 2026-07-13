@@ -8,19 +8,19 @@
 <title>Vedda AI — The Order Engine</title>
 <style>
   :root {
-    --navy: #0a1730;
-    --panel: #0f2246;
-    --panel-2: #143163;
-    --line: #21365f;
-    --gold: #d9a521;
-    --gold-bright: #eec24a;
-    --gold-dim: rgba(217,165,33,0.16);
-    --human: #5fa8e0;
-    --human-bright: #8cc4f0;
-    --human-dim: rgba(95,168,224,0.16);
-    --ink: #eef2fa;
-    --muted: #9aa9c7;
-    --muted-2: #67779e;
+    --navy: #000000;
+    --panel: #0d0d0d;
+    --panel-2: #161616;
+    --line: #262626;
+    --gold: #f97316;
+    --gold-bright: #fb923c;
+    --gold-dim: rgba(249,115,22,0.16);
+    --human: #ffffff;
+    --human-bright: #ffffff;
+    --human-dim: rgba(255,255,255,0.14);
+    --ink: #ffffff;
+    --muted: #a3a3a3;
+    --muted-2: #666666;
     --font-display: 900 1em/1 'Arial Black','Helvetica Neue',Helvetica,Arial,sans-serif;
     --font-body: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
     --font-mono: ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
@@ -40,7 +40,7 @@
   /* hero */
   .hero { position: relative; padding: 74px 0 40px; overflow: hidden; }
   .hero-glow { position: absolute; top: -40%; left: 50%; width: 820px; height: 820px; transform: translateX(-50%);
-    background: radial-gradient(circle, rgba(217,165,33,0.18) 0%, rgba(95,168,224,0.06) 40%, transparent 66%); filter: blur(24px); z-index: 0; animation: pulse 8s ease-in-out infinite; }
+    background: radial-gradient(circle, rgba(249,115,22,0.20) 0%, rgba(249,115,22,0.05) 40%, transparent 66%); filter: blur(24px); z-index: 0; animation: pulse 8s ease-in-out infinite; }
   @keyframes pulse { 0%,100%{opacity:.7;} 50%{opacity:1;} }
   .hero .wrap { position: relative; z-index: 1; }
   .brandbar { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.28em; color: var(--muted); margin-bottom: 34px; text-transform: uppercase; }
@@ -150,12 +150,12 @@
 <header class="hero">
   <div class="hero-glow" aria-hidden="true"></div>
   <div class="wrap">
-    <div class="brandbar"><b>VEDDA</b> AI · THE ORDER ENGINE</div>
+    <div class="brandbar"><b>VEDDA</b> AI · THE ORDER ENGINE &nbsp;·&nbsp; <a href="./" style="color:var(--muted);text-decoration:none;">← back to the proposal</a></div>
     <h1>Watch a single order <span class="hl">run itself.</span></h1>
-    <p class="lead">Here's a real print order moving through Vedda from the first email to a tracked, approved job — with AI handling the busywork and <b>your people making every call that matters.</b> Then watch the same engine run a law firm, a contractor, any business. Press play.</p>
+    <p class="lead">A real print order, first email to delivered job. <b>AI does the busywork. Your people make every call that matters.</b> Press play.</p>
     <div class="legend">
-      <span class="item"><span class="dot ai"></span> AI handles it — automatically</span>
-      <span class="item"><span class="dot human"></span> Your Vedda team — the human calls</span>
+      <span class="item"><span class="dot ai"></span> Orange — AI handles it</span>
+      <span class="item"><span class="dot human"></span> White — your Vedda team</span>
     </div>
   </div>
 </header>
