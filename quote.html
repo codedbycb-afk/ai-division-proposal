@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vedda AI — Instant Quote Assistant (Demo)</title>
+<style>
+  :root{
+    --navy:#0a1730; --panel:#0f2246; --panel-2:#143163; --line:#21365f;
+    --gold:#d9a521; --gold-bright:#eec24a; --gold-dim:rgba(217,165,33,.15);
+    --ink:#eef2fa; --muted:#9aa9c7; --muted-2:#67779e; --ok:#5fca8d;
+    --font-display:900 1em/1 'Arial Black','Helvetica Neue',Helvetica,Arial,sans-serif;
+    --font-body:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --font-mono:ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:
+      radial-gradient(1200px 600px at 80% -10%,rgba(217,165,33,.08),transparent 60%),
+      var(--navy);
+    color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55;
+    min-height:100vh;padding:32px 20px 80px}
+  .wrap{max-width:900px;margin:0 auto}
+  .eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin:0 0 10px}
+  h1{font:var(--font-display);text-transform:uppercase;letter-spacing:-.02em;font-size:clamp(26px,5vw,40px);margin:0 0 8px;line-height:1.02}
+  h1 .hl{color:var(--gold)}
+  .sub{color:var(--muted);max-width:60ch;margin:0 0 28px}
+  .badge{display:inline-flex;gap:8px;align-items:center;font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;color:var(--gold-bright);border:1px solid var(--gold-dim);padding:6px 12px;border-radius:100px;margin-bottom:20px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:20px}
+  label.fld{display:block;font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-2);margin-bottom:10px}
+  textarea{width:100%;min-height:96px;resize:vertical;background:var(--navy);border:1px solid var(--line);border-radius:12px;color:var(--ink);font-family:var(--font-body);font-size:16px;padding:14px 16px;line-height:1.5}
+  textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-dim)}
+  .presets{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
+  .chip{cursor:pointer;background:var(--panel-2);border:1px solid var(--line);color:var(--muted);border-radius:100px;padding:7px 13px;font-size:13px;transition:.15s}
+  .chip:hover{border-color:var(--gold);color:var(--ink)}
+  .go{margin-top:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  button.run{cursor:pointer;background:var(--gold);color:#241a02;border:0;border-radius:100px;padding:13px 26px;font-weight:800;font-size:15px;letter-spacing:.01em;transition:.15s}
+  button.run:hover{background:var(--gold-bright)}
+  button.run:disabled{opacity:.5;cursor:default}
+  .hint{color:var(--muted-2);font-size:13px}
+  /* AI output */
+  #out{display:none}
+  #out.show{display:block;animation:fade .4s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .think{font-family:var(--font-mono);font-size:13px;color:var(--gold-bright);display:flex;align-items:center;gap:10px;margin-bottom:6px;opacity:0;animation:fade .3s forwards}
+  .think .tick{color:var(--ok)}
+  .aihdr{display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:2px 0 16px}
+  .aihdr .pulse{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold);animation:pulse 1.4s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .specs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+  .spec{opacity:0;background:var(--gold-dim);border:1px solid var(--gold-dim);color:var(--gold-bright);border-radius:8px;padding:6px 11px;font-size:13px;font-family:var(--font-mono)}
+  .spec b{color:var(--ink);font-weight:600}
+  .quote{border:1px solid var(--gold-dim);border-left:3px solid var(--gold);border-radius:0 12px 12px 0;background:var(--panel-2);padding:20px 22px}
+  .qtitle{font:var(--font-display);text-transform:uppercase;font-size:19px;letter-spacing:-.01em;margin:0 0 4px}
+  .qmeta{color:var(--muted);font-size:13px;margin-bottom:18px}
+  .li{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--line);opacity:0}
+  .li .desc{color:var(--ink)}
+  .li .desc small{display:block;color:var(--muted-2);font-size:12px}
+  .li .amt{font-family:var(--font-mono);color:var(--ink);white-space:nowrap}
+  .li.total{border-bottom:0;padding-top:16px;font-weight:800}
+  .li.total .desc{font:var(--font-display);text-transform:uppercase;font-size:16px}
+  .li.total .amt{color:var(--gold-bright);font-size:20px;font-weight:800}
+  .li.rush .amt{color:var(--gold-bright)}
+  .foot{display:flex;flex-wrap:wrap;gap:14px 24px;margin-top:18px;opacity:0}
+  .foot .f{display:flex;flex-direction:column}
+  .foot .k{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2)}
+  .foot .v{color:var(--ink);font-weight:600}
+  .upsell{opacity:0;margin-top:18px;background:var(--gold-dim);border:1px dashed var(--gold);border-radius:10px;padding:13px 16px;font-size:14px;color:var(--ink)}
+  .upsell b{color:var(--gold-bright)}
+  .disclaim{color:var(--muted-2);font-size:12px;margin-top:22px;text-align:center;line-height:1.6}
+  .actions{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;opacity:0}
+  .actions button{cursor:pointer;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:100px;padding:9px 16px;font-size:13px;font-family:var(--font-mono);transition:.15s}
+  .actions button:hover{border-color:var(--gold);color:var(--ink)}
+  .reveal-anim{animation:fade .4s forwards}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="badge"><span class="dot"></span> VEDDA AI · LIVE DEMO</div>
+  <p class="eyebrow">Vedda AI Division — Instant Quote Assistant</p>
+  <h1>A quote request comes in. <span class="hl">The AI drafts it before you finish your coffee.</span></h1>
+  <p class="sub">Type a customer's request the way they'd actually say it — messy, plain English. Watch the assistant pull the specs, price it against the shop's rate card, and hand back a ready-to-send estimate. This is what runs 24/7 on Vedda's floor.</p>
+
+  <div class="card">
+    <label class="fld" for="req">Customer request</label>
+    <textarea id="req" placeholder="e.g. Need 500 double-sided business cards on thick matte stock, and can I get them by Friday?"></textarea>
+    <div class="presets" id="presets"></div>
+    <div class="go">
+      <button class="run" id="run">Draft the quote →</button>
+      <span class="hint">Runs locally — no data leaves this page.</span>
+    </div>
+  </div>
+
+  <div id="out">
+    <div class="card">
+      <div id="thinking"></div>
+      <div class="aihdr" id="aihdr" style="display:none"><span class="pulse"></span> AI-drafted estimate</div>
+      <div class="specs" id="specs"></div>
+      <div class="quote" id="quote"></div>
+      <div class="actions" id="actions">
+        <button onclick="location.reload()">↻ New request</button>
+        <button id="copybtn">⧉ Copy estimate</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="disclaim">Demo build. Pricing is illustrative and estimated from a sample rate card — the production version reads Vedda's real pricing and drafts through Claude, then waits for a human "send." <b style="color:var(--muted)">Gold = AI. The human stays in control of every send.</b></p>
+</div>
+
+<script>
+const PRESETS = [
+  "Need 500 double-sided business cards on thick matte stock, and can I get them by Friday?",
+  "How much for a 3ft by 6ft vinyl banner for our grand opening this weekend?",
+  "Looking for 250 full-color flyers, 8.5x11, one side, for an event next month.",
+  "We need 40 t-shirts, front and back print, 2 colors, for a company softball team.",
+  "Can I get 100 yard signs, 18x24, single sided, double-sided grommets? Rush.",
+  "1000 postcards, 4x6, glossy, mailed out — full color both sides."
+];
+
+// --- lightweight "understanding" layer (deterministic, feels like AI) ---
+const RATE = {
+  business_cards:{ name:"Business Cards", unit:"card", setup:25, per:0.14, min:35, days:3,
+    stocks:{matte:1.15,glossy:1.1,thick:1.35,standard:1}, size:"3.5 × 2 in" },
+  flyer:{ name:"Flyers", unit:"flyer", setup:20, per:0.28, min:40, days:3,
+    stocks:{glossy:1.15,matte:1.1,standard:1}, size:"8.5 × 11 in" },
+  postcard:{ name:"Postcards", unit:"card", setup:30, per:0.22, min:45, days:4,
+    stocks:{glossy:1.15,matte:1.1,standard:1}, size:"varies" },
+  banner:{ name:"Vinyl Banner", unit:"sq ft", setup:15, per:5.5, min:65, days:2,
+    stocks:{standard:1}, size:"custom" },
+  yard_sign:{ name:"Yard Signs", unit:"sign", setup:20, per:8.5, min:60, days:3,
+    stocks:{standard:1}, size:"18 × 24 in" },
+  apparel:{ name:"Custom Apparel", unit:"shirt", setup:40, per:9.5, min:120, days:6,
+    stocks:{standard:1}, size:"per garment" },
+  brochure:{ name:"Brochures", unit:"brochure", setup:35, per:0.65, min:75, days:4,
+    stocks:{glossy:1.15,matte:1.1,standard:1}, size:"tri-fold" },
+  sticker:{ name:"Stickers / Labels", unit:"sticker", setup:20, per:0.35, min:40, days:4,
+    stocks:{glossy:1.1,matte:1.05,standard:1}, size:"custom die-cut" },
+  generic:{ name:"Custom Print Job", unit:"unit", setup:35, per:0.5, min:75, days:4,
+    stocks:{standard:1}, size:"to be confirmed" }
+};
+
+function classify(t){
+  t=t.toLowerCase();
+  if(/business card|biz card/.test(t)) return 'business_cards';
+  if(/postcard/.test(t)) return 'postcard';
+  if(/flyer|flier|leaflet/.test(t)) return 'flyer';
+  if(/banner/.test(t)) return 'banner';
+  if(/yard sign|lawn sign|sign\b/.test(t)) return 'yard_sign';
+  if(/t-?shirt|shirt|hoodie|apparel|garment|tee\b/.test(t)) return 'apparel';
+  if(/brochure|tri-?fold|pamphlet/.test(t)) return 'brochure';
+  if(/sticker|label|decal/.test(t)) return 'sticker';
+  return 'generic';
+}
+function qtyOf(t,def){
+  // grab the first sensible number
+  const m=t.replace(/,/g,'').match(/(\d{2,6})\s*(pcs|pieces|cards|flyers|shirts|signs|postcards|units|x)?/i);
+  if(m) return parseInt(m[1],10);
+  const small=t.match(/\b(\d{1,3})\b/); return small?parseInt(small[1],10):def;
+}
+function stockOf(t){
+  t=t.toLowerCase();
+  if(/thick|heavy|premium|32pt|16pt/.test(t)) return 'thick';
+  if(/gloss/.test(t)) return 'glossy';
+  if(/matte/.test(t)) return 'matte';
+  return 'standard';
+}
+function sidesOf(t){ return /double|both side|two side|2 side|front and back|front & back|back and front/i.test(t)?2:1; }
+function rushOf(t){ return /rush|asap|urgent|tomorrow|today|by friday|this weekend|next day|overnight/i.test(t.toLowerCase()); }
+function colorsOf(t){ const m=t.toLowerCase().match(/(\d)\s*colou?r/); return m?parseInt(m[1],10):(/full color|full colour|4 ?color|cmyk/.test(t.toLowerCase())?4:1); }
+function bannerSqFt(t){ const m=t.match(/(\d+)\s*(ft|foot|feet|')\s*(x|by|\*)\s*(\d+)/i); if(m) return parseInt(m[1])*parseInt(m[4]); return 18; }
+
+function money(n){ return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+
+function estimate(text){
+  const key=classify(text), r=RATE[key];
+  const stock=stockOf(text), sides=sidesOf(text), rush=rushOf(text), colors=colorsOf(text);
+  let qty=qtyOf(text, key==='apparel'?24:key==='banner'?1:500);
+  const lines=[]; let base;
+
+  if(key==='banner'){
+    const sqft=bannerSqFt(text); qty=1;
+    base=Math.max(r.min, r.setup + sqft*r.per);
+    lines.push({d:`${r.name} · ${sqft} sq ft`, s:`${money(r.per)}/sq ft + ${money(r.setup)} setup`, a:base});
+  } else if(key==='apparel'){
+    const perShirt=r.per*(colors>1?1+(colors-1)*0.25:1)*(sides===2?1.4:1);
+    base=Math.max(r.min, r.setup + qty*perShirt);
+    lines.push({d:`${qty} × ${r.name}`, s:`${colors}-color${sides===2?', front & back':''} · ${money(perShirt)}/shirt`, a:qty*perShirt});
+    lines.push({d:`Screen setup`, s:`${colors} screen${colors>1?'s':''}`, a:r.setup});
+  } else {
+    const mult=(r.stocks[stock]||1)*(sides===2?1.6:1)*(colors>=4?1:0.9);
+    const per=r.per*mult;
+    base=Math.max(r.min, r.setup + qty*per);
+    lines.push({d:`${qty} × ${r.name}`, s:`${r.size} · ${stock} stock · ${sides===1?'single':'double'}-sided`, a:qty*per});
+    lines.push({d:`File prep & setup`, s:`artwork check, proof`, a:r.setup});
+  }
+
+  const sub=lines.reduce((s,l)=>s+l.a,0);
+  const rushFee=rush?Math.max(25,sub*0.2):0;
+  const tax=(sub+rushFee)*0.075;
+  const total=sub+rushFee+tax;
+  const days=rush?Math.max(1,Math.round(r.days/2)):r.days;
+
+  const specs=[
+    {k:'Product',v:r.name},
+    {k:'Quantity',v:key==='banner'?bannerSqFt(text)+' sq ft':qty.toLocaleString()},
+    key!=='banner'&&key!=='apparel'?{k:'Stock',v:stock}:null,
+    {k:'Sides',v:sides===2?'Double':'Single'},
+    {k:'Color',v:colors>=4?'Full color':colors+'-color'},
+    rush?{k:'Priority',v:'RUSH'}:null
+  ].filter(Boolean);
+
+  const upsells={
+    business_cards:"Add a spot-UV or rounded-corner finish (+$0.04/card) — bumps perceived value on a first impression.",
+    flyer:"Pair these with 250 matching postcards for a mailer — most events convert better with a follow-up piece.",
+    banner:"Add 2 retractable stands so the banner's reusable indoors — saves a reprint next event.",
+    yard_sign:"Grab an extra 10% for replacements — signs walk off. Cheaper now than a rush reorder.",
+    apparel:"Add left-chest embroidery on 10 for the managers — makes the team order look intentional.",
+    postcard:"Bundle the mailing list cleanup + EDDM routing so it drops straight to the neighborhood.",
+    default:"Ask about a standing reorder — repeat jobs skip setup and lock your turnaround."
+  };
+
+  return {r,lines,sub,rushFee,tax,total,days,rush,specs,upsell:upsells[key]||upsells.default};
+}
+
+// --- render with staged animation ---
+const el=id=>document.getElementById(id);
+const req=el('req');
+el('presets').innerHTML=PRESETS.map((p,i)=>`<span class="chip" data-i="${i}">${p.length>46?p.slice(0,44)+'…':p}</span>`).join('');
+el('presets').addEventListener('click',e=>{const c=e.target.closest('.chip');if(c){req.value=PRESETS[c.dataset.i];req.focus();}});
+
+const wait=ms=>new Promise(r=>{let n=0;(function tick(){n+=16;if(n>=ms)return r();requestAnimationFrame(tick);})();});
+
+el('run').addEventListener('click',run);
+req.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='Enter')run();});
+
+async function run(){
+  const text=req.value.trim();
+  if(!text){req.focus();return;}
+  el('run').disabled=true;
+  const out=el('out'); out.classList.add('show');
+  el('thinking').innerHTML=''; el('specs').innerHTML=''; el('quote').innerHTML='';
+  el('aihdr').style.display='none'; el('actions').style.opacity=0;
+  out.scrollIntoView({behavior:'smooth',block:'start'});
+
+  const steps=['Reading the request…','Identifying product & specs…','Pricing against the rate card…','Drafting the estimate…'];
+  for(const s of steps){
+    const d=document.createElement('div'); d.className='think';
+    d.innerHTML=`<span class="tick">▸</span> ${s}`;
+    el('thinking').appendChild(d);
+    await wait(360);
+    d.innerHTML=`<span class="tick">✓</span> ${s}`;
+  }
+  await wait(200);
+  el('thinking').innerHTML='';
+  el('aihdr').style.display='flex';
+
+  const q=estimate(text);
+
+  // specs
+  for(const s of q.specs){
+    const sp=document.createElement('span'); sp.className='spec';
+    sp.innerHTML=`${s.k}: <b>${s.v}</b>`;
+    el('specs').appendChild(sp);
+    sp.style.animation='fade .3s forwards'; await wait(90);
+  }
+  await wait(150);
+
+  // quote card
+  const qc=el('quote');
+  qc.innerHTML=`<div class="qtitle">Estimate · ${q.r.name}</div>
+    <div class="qmeta">Prepared by Vedda AI · turnaround ${q.days} business day${q.days>1?'s':''}${q.rush?' (rush)':''}</div>`;
+  const rows=[...q.lines.map(l=>({d:l.d,s:l.s,a:l.a}))];
+  if(q.rushFee>0) rows.push({d:'Rush priority',s:'expedited production',a:q.rushFee,cls:'rush'});
+  rows.push({d:'Sales tax',s:'est. 7.5%',a:q.tax});
+  rows.push({d:'Estimated total',a:q.total,total:true});
+
+  for(const row of rows){
+    const li=document.createElement('div');
+    li.className='li'+(row.total?' total':'')+(row.cls?' '+row.cls:'');
+    li.innerHTML=`<div class="desc">${row.d}${row.s?`<small>${row.s}</small>`:''}</div><div class="amt">${money(row.a)}</div>`;
+    qc.appendChild(li);
+    li.style.animation='fade .3s forwards'; await wait(140);
+  }
+
+  const foot=document.createElement('div'); foot.className='foot';
+  foot.innerHTML=`
+    <div class="f"><span class="k">Turnaround</span><span class="v">${q.days} business day${q.days>1?'s':''}</span></div>
+    <div class="f"><span class="k">Drafted in</span><span class="v">${(1.4+Math.min(2,q.specs.length*0.2)).toFixed(1)}s</span></div>
+    <div class="f"><span class="k">Status</span><span class="v" style="color:var(--gold-bright)">Awaiting human send</span></div>`;
+  qc.appendChild(foot); await wait(60); foot.style.animation='fade .4s forwards';
+
+  const up=document.createElement('div'); up.className='upsell';
+  up.innerHTML=`<b>💡 Suggested add-on:</b> ${q.upsell}`;
+  qc.appendChild(up); await wait(120); up.style.animation='fade .4s forwards';
+
+  el('actions').style.animation='fade .4s forwards';
+  el('run').disabled=false;
+
+  // copy
+  el('copybtn').onclick=()=>{
+    const txt=`VEDDA AI — ESTIMATE (${q.r.name})\n`+
+      rows.map(r=>`${r.d}${r.s?' ('+r.s+')':''}: ${money(r.a)}`).join('\n')+
+      `\nTurnaround: ${q.days} business days${q.rush?' (rush)':''}`;
+    navigator.clipboard.writeText(txt).then(()=>{el('copybtn').textContent='✓ Copied';setTimeout(()=>el('copybtn').textContent='⧉ Copy estimate',1600);});
+  };
+}
+</script>
+</body>
+</html>
