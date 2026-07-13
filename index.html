@@ -139,21 +139,23 @@
   .benefit b { display: block; color: var(--orange-bright); font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
   .benefit span { color: var(--muted); }
 
-  /* THREE OPTIONS */
-  .opts { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 42px; }
-  .opt { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 26px 24px; display: flex; flex-direction: column; }
-  .opt.rec { border-color: var(--orange); box-shadow: 0 0 0 1px var(--orange-dim), 0 0 34px rgba(249,115,22,0.12); }
-  .opt .flag { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--orange-bright); height: 15px; margin-bottom: 10px; }
-  .opt .onum { font-family: var(--font-mono); font-size: 12px; color: var(--muted-2); letter-spacing: 0.1em; margin-bottom: 8px; }
-  .opt h3 { font: var(--font-display); text-transform: uppercase; font-size: 19px; margin-bottom: 10px; }
-  .opt .what { font-size: 15px; color: var(--muted); margin: 0 0 20px; flex-grow: 1; }
-  .opt .what b { color: var(--ink); }
-  .opt .rows { display: grid; gap: 13px; border-top: 1px solid var(--line); padding-top: 18px; }
-  .opt .row .rk { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-2); margin-bottom: 3px; }
-  .opt .row .rv { font-size: 15px; color: var(--ink); line-height: 1.4; font-weight: 700; }
-  .opt .row .rv b { color: var(--orange-bright); font-weight: 700; }
-  .opt .row .rv span { color: var(--muted); font-weight: 400; }
-  @media (max-width: 760px) { .opts { grid-template-columns: 1fr; } }
+  /* THREE PLANS */
+  .plans { display: grid; gap: 18px; margin-top: 42px; }
+  .plan { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 28px 30px; }
+  .plan.rec { border-color: var(--orange); box-shadow: 0 0 0 1px var(--orange-dim), 0 0 34px rgba(249,115,22,0.12); }
+  .plan .flag { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--orange-bright); margin-bottom: 8px; }
+  .phead { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; margin-bottom: 18px; }
+  .phead .onum { font-family: var(--font-mono); font-size: 12px; color: var(--muted-2); letter-spacing: 0.1em; margin-bottom: 6px; }
+  .phead h3 { font: var(--font-display); text-transform: uppercase; font-size: 22px; }
+  .comp { display: flex; gap: 26px; text-align: right; }
+  .comp .c .num { font: var(--font-display); font-size: 30px; color: var(--orange); line-height: 1; font-variant-numeric: tabular-nums; }
+  .comp .c .lb { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-2); margin-top: 6px; }
+  .prow { display: grid; grid-template-columns: 150px 1fr; gap: 16px; padding: 13px 0; border-top: 1px solid var(--line); }
+  .prow .rk { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-2); padding-top: 2px; }
+  .prow .rv { font-size: 15px; color: var(--muted); line-height: 1.5; }
+  .prow .rv b { color: var(--ink); font-weight: 700; }
+  .prow .rv .o { color: var(--orange-bright); font-weight: 700; }
+  @media (max-width: 640px) { .prow { grid-template-columns: 1fr; gap: 4px; } .comp { text-align: left; } }
 
   .democta { display: inline-flex; align-items: center; gap: 8px; margin-top: 30px; font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.04em; color: var(--orange-bright); text-decoration: none; border: 1px solid var(--orange-dim); border-radius: 100px; padding: 12px 20px; transition: border-color .2s, background .2s; }
   .democta:hover { border-color: var(--orange); background: var(--orange-dim); }
@@ -207,7 +209,7 @@
     </div>
     <p class="eyebrow">Partnership Proposal</p>
     <h1>Building the <span class="hl">AI Division</span> of Vedda Printing.</h1>
-    <p class="hero-sub">A new division under the Vedda name. <b>You bring the brand and the customers. I build and run the AI.</b> We own it together.</p>
+    <p class="hero-sub">A new division under the Vedda name. <b>You bring the brand and the customers. I build and run the AI.</b> We split what it earns.</p>
     <div class="hero-tags">
       <span class="tag brand">Let's build the future together.</span>
       <span class="tag">Presented to Vedda Printing leadership</span>
@@ -221,7 +223,7 @@
   <div class="wrap">
     <p class="eyebrow reveal">01 — The idea</p>
     <h2 class="bigsay reveal">Vedda becomes the first print shop in Northeast Ohio <span class="hl">selling AI.</span></h2>
-    <p class="aftersay reveal">Customers don't just want print anymore — they want a partner who solves business problems. <b>I build and run the division. Vedda brings the brand and the customer base. No hiring. No infrastructure. We split what it earns.</b></p>
+    <p class="aftersay reveal">Customers don't just want print anymore — they want a partner who solves business problems. <b>I build and run the division. Vedda brings the brand and the customer base. No hiring. No infrastructure. A base plus commission — I only win when Vedda wins.</b></p>
   </div>
 </section>
 
@@ -268,13 +270,13 @@
 
     <div class="division reveal">
       <h3><span class="brandname">Vedda AI</span></h3>
-      <p>I run it as <b>director and co-owner</b>, with a real stake in the division. We share the profit as it grows.</p>
+      <p>I run it as its <b>director</b> — a base salary plus <b>commission on what the division earns.</b> Simple, clean, no strings.</p>
       <span class="frontstage">To customers, it's simply part of the Vedda family.</span>
     </div>
 
     <div class="division reveal" style="border-color:var(--orange-dim);background:linear-gradient(180deg, rgba(249,115,22,0.08), rgba(249,115,22,0.02));margin-top:18px;">
-      <h3 style="color:var(--orange-bright);">Why ownership works for you</h3>
-      <p style="margin-bottom:0;"><b>An employee you have to push. An owner pushes himself.</b> When I own a piece of it, every customer and every dollar gets treated like my own — because it is.</p>
+      <h3 style="color:var(--orange-bright);">Why commission works for you</h3>
+      <p style="margin-bottom:0;"><b>A salary you have to justify. Commission justifies itself.</b> When most of my pay rides on what the division sells, every customer gets treated like my paycheck — because it is. You never have to push me. The split does it for you.</p>
     </div>
   </div>
 </section>
@@ -379,42 +381,63 @@
 <!-- THREE WAYS -->
 <section class="section">
   <div class="wrap">
-    <p class="eyebrow reveal">07 — Three ways in</p>
-    <h2 class="h2big reveal">Pick the depth <span class="hl">that fits.</span></h2>
-    <div class="opts">
-      <div class="opt reveal">
-        <div class="flag"></div>
-        <div class="onum">OPTION 1</div>
-        <h3>Internal Engine</h3>
-        <p class="what">AI runs Vedda's own order flow. <b>All the value stays inside the shop.</b></p>
-        <div class="rows">
-          <div class="row"><div class="rk">You invest</div><div class="rv"><span>Salary + tools</span></div></div>
-          <div class="row"><div class="rk">I take</div><div class="rv">~$65k <span>· no equity</span></div></div>
-          <div class="row"><div class="rk">You get</div><div class="rv">The work of <b>two extra hires</b> <span>with no new payroll</span></div></div>
+    <p class="eyebrow reveal">07 — Three ways to structure it</p>
+    <h2 class="h2big reveal">Pick the split <span class="hl">that fits.</span></h2>
+    <p class="section-lead reveal" style="margin-top:18px;">Same division in all three — the only difference is how we split what it earns. <b>Lower base = I carry the risk and take more of the upside. Higher base = Vedda keeps more of every dollar.</b> These are example structures — we settle the exact numbers together.</p>
+    <div class="plans">
+
+      <div class="plan reveal">
+        <div class="phead">
+          <div>
+            <div class="onum">PLAN 1</div>
+            <h3>Performance-First</h3>
+          </div>
+          <div class="comp">
+            <div class="c"><div class="num">$57k</div><div class="lb">base / yr</div></div>
+            <div class="c"><div class="num">50–60%</div><div class="lb">my commission on AI revenue</div></div>
+          </div>
         </div>
+        <div class="prow"><div class="rk">You get</div><div class="rv">The full engine — <b>AI running Vedda's own floor</b> plus a division selling AI to your customers. Vedda keeps <span class="o">~40–50% of every AI dollar</span>, 100% of the internal savings, and the print work AI clients bring with them.</div></div>
+        <div class="prow"><div class="rk">I do</div><div class="rv"><b>Everything.</b> Build every system, run the division day to day, sell it into the customer base, and deliver every client.</div></div>
+        <div class="prow"><div class="rk">Why it costs this</div><div class="rv">The base is barely above what I make now — <b>your added risk is roughly $9k a year.</b> I only make real money when the division makes real money. The high commission is the price of your low risk.</div></div>
+        <div class="prow"><div class="rk">Napkin math, yr 1</div><div class="rv">On ~$290k of AI revenue: <span class="o">Vedda keeps ~$130k</span> + all internal savings · I earn ~$160k in commission.</div></div>
       </div>
-      <div class="opt rec reveal">
-        <div class="flag">★ Recommended</div>
-        <div class="onum">OPTION 2</div>
-        <h3>The AI Division</h3>
-        <p class="what">Everything in Option 1 — <b>plus we sell it.</b> A whole new profit center under the Vedda name.</p>
-        <div class="rows">
-          <div class="row"><div class="rk">You invest</div><div class="rv"><span>My base + modest capital</span></div></div>
-          <div class="row"><div class="rk">I take</div><div class="rv">Lower base + <b>real equity</b></div></div>
-          <div class="row"><div class="rk">You get</div><div class="rv">Internal gains + <b>new recurring revenue</b></div></div>
+
+      <div class="plan rec reveal">
+        <div class="flag">★ Recommended — the balanced middle</div>
+        <div class="phead">
+          <div>
+            <div class="onum">PLAN 2</div>
+            <h3>The Division</h3>
+          </div>
+          <div class="comp">
+            <div class="c"><div class="num">$65k</div><div class="lb">base / yr</div></div>
+            <div class="c"><div class="num">30–40%</div><div class="lb">my commission on AI revenue</div></div>
+          </div>
         </div>
+        <div class="prow"><div class="rk">You get</div><div class="rv">The same full engine — and <b>Vedda keeps the majority of every dollar:</b> <span class="o">~60–70% of AI revenue</span>, plus all internal savings, plus the new print work.</div></div>
+        <div class="prow"><div class="rk">I do</div><div class="rv">Same as Plan 1 — build, run, sell, deliver — <b>full-time, all-in,</b> with no need for outside work to pay my bills.</div></div>
+        <div class="prow"><div class="rk">Why it costs this</div><div class="rv">Enough base that I can commit completely, enough commission that <b>I stay hungry on every sale.</b> You're not overpaying for certainty or overexposed on commission — this is the split where both sides push hardest.</div></div>
+        <div class="prow"><div class="rk">Napkin math, yr 1</div><div class="rv">On ~$290k of AI revenue: <span class="o">Vedda keeps ~$190k</span> + all internal savings · I earn ~$100k in commission.</div></div>
       </div>
-      <div class="opt reveal">
-        <div class="flag"></div>
-        <div class="onum">OPTION 3</div>
-        <h3>Scaled Venture</h3>
-        <p class="what">Real investment, a small team under me, <b>Vedda AI rolled out across Northeast Ohio.</b></p>
-        <div class="rows">
-          <div class="row"><div class="rk">You invest</div><div class="rv"><span>Real capital + a small team</span></div></div>
-          <div class="row"><div class="rk">I take</div><div class="rv">Higher equity <span>· operator</span></div></div>
-          <div class="row"><div class="rk">You get</div><div class="rv">A second company that can <b>out-earn print</b></div></div>
+
+      <div class="plan reveal">
+        <div class="phead">
+          <div>
+            <div class="onum">PLAN 3</div>
+            <h3>Salary-First</h3>
+          </div>
+          <div class="comp">
+            <div class="c"><div class="num">$78k</div><div class="lb">base / yr</div></div>
+            <div class="c"><div class="num">15–20%</div><div class="lb">my commission on AI revenue</div></div>
+          </div>
         </div>
+        <div class="prow"><div class="rk">You get</div><div class="rv">Nearly the whole income stream — <span class="o">Vedda keeps ~80–85% of every AI dollar</span>, plus the savings, plus the print work. The division's revenue sits almost entirely on your books.</div></div>
+        <div class="prow"><div class="rk">I do</div><div class="rv">Same as the others — the full build and the full operation. <b>The work doesn't shrink; only the split changes.</b></div></div>
+        <div class="prow"><div class="rk">Why it costs this</div><div class="rv">You're buying certainty. <b>A higher fixed cost buys you almost all of the upside</b> — the right pick if Vedda wants to own the revenue stream outright and treat me like a division head on payroll.</div></div>
+        <div class="prow"><div class="rk">Napkin math, yr 1</div><div class="rv">On ~$290k of AI revenue: <span class="o">Vedda keeps ~$240k</span> + all internal savings · I earn ~$50k in commission.</div></div>
       </div>
+
     </div>
   </div>
 </section>
@@ -426,8 +449,8 @@
     <h2 class="h2big reveal">Handshake <span class="hl">to launch.</span></h2>
     <div class="steps">
       <div class="stepr reveal"><div class="n">1</div><h4>Align on the vision</h4><p>Agree this is the direction.</p></div>
-      <div class="stepr reveal"><div class="n">2</div><h4>Agree investment &amp; ownership</h4><p>Settle the split and what goes in.</p></div>
-      <div class="stepr reveal"><div class="n">3</div><h4>Put it on paper</h4><p>Ownership, profit share, working terms.</p></div>
+      <div class="stepr reveal"><div class="n">2</div><h4>Agree base &amp; commission</h4><p>Pick the plan and settle the exact split.</p></div>
+      <div class="stepr reveal"><div class="n">3</div><h4>Put it on paper</h4><p>Base, commission, working terms.</p></div>
       <div class="stepr reveal"><div class="n">4</div><h4>Build the Vedda AI brand</h4><p>How it looks and sells.</p></div>
       <div class="stepr reveal"><div class="n">5</div><h4>Train the team</h4><p>Everyone can introduce AI with confidence.</p></div>
       <div class="stepr reveal"><div class="n">6</div><h4>Launch to existing customers</h4><p>The fastest early wins.</p></div>
@@ -440,7 +463,7 @@
   <div class="wrap">
     <div class="cta reveal">Let's build the <span class="hl">future</span> together.</div>
     <p class="reveal"><b>The market is moving with or without us.</b> I'd rather build this with you, under the Vedda name, and win it together.</p>
-    <div class="sign reveal"><span class="line">Cam Balazy</span> &nbsp;·&nbsp; Proposed Director &amp; Co-Owner, Vedda AI &nbsp;·&nbsp; 2026</div>
+    <div class="sign reveal"><span class="line">Cam Balazy</span> &nbsp;·&nbsp; Proposed Director, Vedda AI &nbsp;·&nbsp; 2026</div>
   </div>
 </footer>
 
